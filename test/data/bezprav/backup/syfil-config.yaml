@@ -1,0 +1,7 @@
+forest:
+  maintree:
+     path: ./test/data/bezprav/source-of-maintree
+     filter:
+       #- i=NECHATI/nechati11.txt
+       # - e~NECHATI
+       #- e~[SZ].*

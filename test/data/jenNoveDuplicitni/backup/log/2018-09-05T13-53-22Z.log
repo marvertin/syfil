@@ -1,0 +1,22 @@
+=========================================================================
+Start scanning: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-02-03T00-00-00Z.yaba-slice at 2018-09-05 13:53:22.4018237 UTC
+0ss 2018-09-05 13:53:22      1 #      0.000 MB  Infinity #/s  Infinity MB/s      0.000 maintree\necobylo
+End scanning at 2018-09-05 13:53:22.4028252 UTC, duration="0.0010s "; total: 
+     1#      0.000 MB |  Infinity #/s    Infinity MB/s  
+=========================================================================
+Start scanning: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-09-05T13-53-20Z.yaba-slice at 2018-09-05 13:53:22.4038248 UTC
+0.0080s 2018-09-05 13:53:22      1 #      0.001 MB    123.69 #/s    0.063 MB/s      0.001 maintree\~N-LINK~2222.yaba
+0.0090s 2018-09-05 13:53:22      2 #      0.001 MB    220.11 #/s    0.113 MB/s      0.001 maintree\~N-LINK~1111.yaba
+0.0090s 2018-09-05 13:53:22      3 #      0.001 MB    330.17 #/s    0.117 MB/s      0.000 maintree\3333
+End scanning at 2018-09-05 13:53:22.4139116 UTC, duration="0.0100s "; total: 
+     3#      0.001 MB |    330.17 #/s       0.117 MB/s  
+=========================================================================
+Start scanning: ./test/data/jenNoveDuplicitni/source-of-maintree at 2018-09-05 13:53:22.4189147 UTC
+0ss 2018-09-05 13:53:22      1 #      0.000 MB  Infinity #/s  Infinity MB/s      0.000 necobylo
+0.0010s 2018-09-05 13:53:22      2 #      0.000 MB   1998.40 #/s    0.053 MB/s      0.000 3333
+0.0020s 2018-09-05 13:53:22      3 #      0.000 MB   1498.50 #/s    0.048 MB/s      0.000 2222
+0.0020s 2018-09-05 13:53:22      4 #      0.000 MB   1998.00 #/s    0.070 MB/s      0.000 1111
+End scanning at 2018-09-05 13:53:22.4209167 UTC, duration="0.0020s "; total: 
+     4#      0.000 MB |   1998.00 #/s       0.070 MB/s  
+create meta: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-09-05T13-53-22Z.yaba-slice\maintree\~LINK~1111.yaba
+create meta: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-09-05T13-53-22Z.yaba-slice\maintree\~LINK~2222.yaba

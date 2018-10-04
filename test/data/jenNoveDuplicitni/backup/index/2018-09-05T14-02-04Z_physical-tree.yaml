@@ -1,0 +1,5 @@
+maintree:
+  3333: RegularFile (Ree {rcount = 1, rsize = 45, rtime = 2018-09-05 14:02:04.3294842
+    UTC, rhash = "4\217\150^\175=\NAK\SI\180\EOT.\144Lz\223\211\EM\t\145\143"}) "/2018-09-05T14-02-04Z.yaba-slice/maintree/3333"
+  ~N-LINK~2222.yaba: MetaFile (PhysicalLink "/2018-09-05T14-02-04Z.yaba-slice/maintree/3333")
+  ~N-LINK~1111.yaba: MetaFile (PhysicalLink "/2018-09-05T14-02-04Z.yaba-slice/maintree/3333")

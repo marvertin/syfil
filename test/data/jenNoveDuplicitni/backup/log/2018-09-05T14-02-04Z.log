@@ -1,0 +1,16 @@
+=========================================================================
+Start scanning: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-02-03T00-00-00Z.yaba-slice at 2018-09-05 14:02:04.1923852 UTC
+0.0020s 2018-09-05 14:02:04      1 #      0.000 MB    499.65 #/s    0.005 MB/s      0.000 maintree\necobylo
+End scanning at 2018-09-05 14:02:04.1943866 UTC, duration="0.0020s "; total: 
+     1#      0.000 MB |    499.65 #/s       0.005 MB/s  
+=========================================================================
+Start scanning: ./test/data/jenNoveDuplicitni/source-of-maintree at 2018-09-05 14:02:04.2134011 UTC
+0.0070s 2018-09-05 14:02:04      1 #      0.000 MB    142.77 #/s    0.001 MB/s      0.000 necobylo
+0.0080s 2018-09-05 14:02:04      2 #      0.000 MB    249.84 #/s    0.007 MB/s      0.000 3333
+0.0110s 2018-09-05 14:02:04      3 #      0.000 MB    272.53 #/s    0.009 MB/s      0.000 2222
+0.0110s 2018-09-05 14:02:04      4 #      0.000 MB    363.37 #/s    0.013 MB/s      0.000 1111
+End scanning at 2018-09-05 14:02:04.2244091 UTC, duration="0.0110s "; total: 
+     4#      0.000 MB |    363.37 #/s       0.013 MB/s  
+create meta: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-09-05T14-02-04Z.yaba-slice\maintree\~N-LINK~1111.yaba
+create meta: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-09-05T14-02-04Z.yaba-slice\maintree\~N-LINK~2222.yaba
+copy file: ./test/data/jenNoveDuplicitni/source-of-maintree\3333 --> I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-09-05T14-02-04Z.yaba-slice\maintree\3333

@@ -1,0 +1,31 @@
+sliceNameStrategy: UtcSeconds
+forest:
+  ccase4: 
+     path: ./test/data/case4/source-of-maintree
+     
+  maintree:
+     path: ./test/data/case3/source-of-maintree
+     filter:
+       - e~.*
+       - i=NECHATI/nechati11.txt
+       - i~NECHATI
+       - e~[SN].*
+  neco:
+     path: ./test/neco
+     filter:
+       - i=aaaa
+       - e~[XY].*
+       - e~bbb
+       - e~ccccc
+     
+  jiny: 
+      path: ./test/necoa     
+  na:
+    path: ddx
+  nag: 
+    path: fdsfy
+  zag: 
+    path: fdsfx
+  za:
+    path: fsfy    
+      

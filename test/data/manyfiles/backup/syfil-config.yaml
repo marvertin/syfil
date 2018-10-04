@@ -1,0 +1,5 @@
+forest:
+  root:
+    path: ./test/data/manyfiles/source-of-root
+  
+

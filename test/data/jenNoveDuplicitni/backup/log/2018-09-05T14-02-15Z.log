@@ -1,0 +1,20 @@
+=========================================================================
+Start scanning: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-02-03T00-00-00Z.yaba-slice at 2018-09-05 14:02:15.4678338 UTC
+0.0009s 2018-09-05 14:02:15      1 #      0.000 MB   1009.18 #/s    0.011 MB/s      0.000 maintree\necobylo
+End scanning at 2018-09-05 14:02:15.4688247 UTC, duration="0.0009s "; total: 
+     1#      0.000 MB |   1009.18 #/s       0.011 MB/s  
+=========================================================================
+Start scanning: I:\zoje\safe-backup\test\data\jenNoveDuplicitni\backup\data\2018-09-05T14-02-04Z.yaba-slice at 2018-09-05 14:02:15.4708261 UTC
+0.0070s 2018-09-05 14:02:15      1 #      0.001 MB    142.76 #/s    0.073 MB/s      0.001 maintree\~N-LINK~2222.yaba
+0.0100s 2018-09-05 14:02:15      2 #      0.001 MB    222.04 #/s    0.114 MB/s      0.001 maintree\~N-LINK~1111.yaba
+0.0100s 2018-09-05 14:02:15      3 #      0.001 MB    299.78 #/s    0.106 MB/s      0.000 maintree\3333
+End scanning at 2018-09-05 14:02:15.4818339 UTC, duration="0.0110s "; total: 
+     3#      0.001 MB |    299.78 #/s       0.106 MB/s  
+=========================================================================
+Start scanning: ./test/data/jenNoveDuplicitni/source-of-maintree at 2018-09-05 14:02:15.4878388 UTC
+0ss 2018-09-05 14:02:15      1 #      0.000 MB  Infinity #/s  Infinity MB/s      0.000 necobylo
+0.0010s 2018-09-05 14:02:15      2 #      0.000 MB   1998.80 #/s    0.053 MB/s      0.000 3333
+0.0010s 2018-09-05 14:02:15      3 #      0.000 MB   2998.20 #/s    0.096 MB/s      0.000 2222
+0.0020s 2018-09-05 14:02:15      4 #      0.000 MB   1998.80 #/s    0.070 MB/s      0.000 1111
+End scanning at 2018-09-05 14:02:15.48984 UTC, duration="0.0020s "; total: 
+     4#      0.000 MB |   1998.80 #/s       0.070 MB/s  

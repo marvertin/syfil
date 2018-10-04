@@ -1,0 +1,4 @@
+forest:
+  maintree:
+     path: ./test/data/jenNoveDuplicitni/source-of-maintree
+     filter:

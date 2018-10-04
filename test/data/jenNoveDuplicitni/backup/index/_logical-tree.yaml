@@ -1,0 +1,53 @@
+maintree:
+  necobylo:
+    rsize: 11
+    rtime: 2018-09-05T13:52:48.7294982Z
+    rhash: ! '"]\152\132\142]5\131\184\224\253\143\147\137\244\n\219M\130\242D"'
+    rcount: 1
+  ADR2:
+    jeden:
+      rsize: 3
+      rtime: 2018-09-05T14:03:26.6638322Z
+      rhash: ! '"~$\r\231O\177\237\b\250\b\211\128c\246\166\169\DC4b\168\NAK"'
+      rcount: 1
+    treti:
+      rsize: 6
+      rtime: 2018-09-05T14:03:26.6688353Z
+      rhash: ! '"|t\ENQ\SO\213\251^E\"p\181\242\168\EM\ETBBU\200l\136"'
+      rcount: 1
+    druhy:
+      rsize: 3
+      rtime: 2018-09-05T14:03:26.6588285Z
+      rhash: ! '"\\\177\&8(MC\SUB\189j\ENQ:Vb^\192\136\191\184\137\DC2"'
+      rcount: 1
+  1111:
+    rsize: 45
+    rtime: 2018-09-05T14:03:26.6498222Z
+    rhash: ! '"4\217\150^\175=\NAK\SI\180\EOT.\144Lz\223\211\EM\t\145\143"'
+    rcount: 1
+  2222:
+    rsize: 45
+    rtime: 2018-09-05T14:03:26.6498222Z
+    rhash: ! '"4\217\150^\175=\NAK\SI\180\EOT.\144Lz\223\211\EM\t\145\143"'
+    rcount: 1
+  3333:
+    rsize: 45
+    rtime: 2018-09-05T14:03:26.6498222Z
+    rhash: ! '"4\217\150^\175=\NAK\SI\180\EOT.\144Lz\223\211\EM\t\145\143"'
+    rcount: 1
+  ADR1:
+    jeden:
+      rsize: 3
+      rtime: 2018-09-05T14:03:26.6638322Z
+      rhash: ! '"~$\r\231O\177\237\b\250\b\211\128c\246\166\169\DC4b\168\NAK"'
+      rcount: 1
+    treti:
+      rsize: 6
+      rtime: 2018-09-05T14:03:26.6688353Z
+      rhash: ! '"|t\ENQ\SO\213\251^E\"p\181\242\168\EM\ETBBU\200l\136"'
+      rcount: 1
+    druhy:
+      rsize: 3
+      rtime: 2018-09-05T14:03:26.6588285Z
+      rhash: ! '"\\\177\&8(MC\SUB\189j\ENQ:Vb^\192\136\191\184\137\DC2"'
+      rcount: 1

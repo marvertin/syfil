@@ -1,0 +1,11 @@
+forest:
+  addit:
+     path: ./test/data/case1/source-of-addit
+  maintree:
+     path: ./test/data/case1/source-of-maintree
+     filter:
+       #- i=NECHATI/nechati11.txt
+       # - e~NECHATI
+       #- e~[SZ].*
+  #notexists:
+  #   path: ./not-existent-folder
