@@ -30,6 +30,10 @@ import           Syfil.Command.MarkDuplicities
 import           Syfil.IO.FileNamesC
 import           Util.Types
 
+import           Util.Tree
+import           Util.Treex
+import           Util.Treex.Dir
+
 data Options =
   NormalCommand   { dir    :: String
               , optCommand :: Command
