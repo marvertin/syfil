@@ -4,6 +4,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {- LANGUAGE OverlappingInstances  #-}
 {-# LANGUAGE Rank2Types            #-}
+{-# LANGUAGE TupleSections         #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE UndecidableInstances  #-}
 
@@ -12,8 +13,12 @@ module Util.Treex (
  Tree(..),
  zipPath,
  intersection,
- buildDownM,
- fillNodes
+ fillNodes,
+ buildDownPairM,
+ buildDownEitherM,
+ buildDownPair,
+ buildDownEither,
+
 
 ) where
 
@@ -78,35 +83,7 @@ intersection :: Ord k => Tree k a -> Tree k b -> Tree k (a, b)
 intersection (Tree x xch) (Tree y ych) = Tree (x, y) (M.intersectionWith intersection xch ych)
 
 
-buildx :: Ord k => ([k] -> Either [k] a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
-buildx = bu []
-  where
-   bu ::  Ord k => [k] -> ([k] -> Either [k] a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
-   bu path fd fn = case fd path of
-     Left keys -> let ch = M.fromList (fmap (\k -> (k, bu (k:path) fd fn) ) keys)
-                   in Tree (fn path ch) ch
-     Right a -> Tree a M.empty
 
-build :: Ord k => ([k] -> Either (S.Set k) a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
-build = bu []
- where
-  bu ::  Ord k => [k] -> ([k] -> Either (S.Set k) a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
-  bu path fd fn = case fd path of
-    Left keys -> let ch = M.fromList (fmap (\k -> (k, bu (k:path) fd fn) ) (S.elems keys))
-                  in Tree (fn path ch) ch
-    Right a -> Tree a M.empty
-
-build2 :: Ord k => ([k] -> Either (S.Set k) a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
-build2 fd fn = runIdentity $ buildM (return . fd) (\x y -> return (fn x y))
-
-buildDownM :: (Monad m, Ord k) => ([k] -> m (Either (S.Set k) a)) -> m (Tree k (Maybe a))
-buildDownM = bu []
- where
-  bu ::   (Monad m, Ord k) => [k] -> ([k] -> m (Either (S.Set k) a)) -> m (Tree k (Maybe a))
-  bu path fd = fd path >>= (\node -> case node of
-    Left keys -> let ch = M.fromList <$> traverse (\k -> sequence (k, bu (k:path) fd) ) (S.elems keys)
-                  in Tree Nothing <$> ch
-    Right a ->  return $ Tree (Just a) M.empty)
 
 fillNodes :: Ord k =>  (M.Map k (Tree k a) -> a) -> Tree k (Maybe a) -> Tree k a
 fillNodes fce (Tree may ch) = let newCh = M.map (fillNodes fce) ch
@@ -114,14 +91,7 @@ fillNodes fce (Tree may ch) = let newCh = M.map (fillNodes fce) ch
                                  Just x  -> Tree x newCh
                                  Nothing -> Tree (fce newCh) newCh
 
-buildM :: (Monad m, Ord k) => ([k] -> m (Either (S.Set k) a)) -> ([k] -> M.Map k (Tree k a) -> m a) -> m (Tree k a)
-buildM = bu []
- where
-  bu ::   (Monad m, Ord k) => [k] -> ([k] -> m (Either (S.Set k) a)) -> ([k] -> M.Map k (Tree k a) -> m a) -> m (Tree k a)
-  bu path fd fn = fd path >>= (\node -> case node of
-    Left keys -> let ch = M.fromList <$> (traverse (\k -> sequence (k, bu (k:path) fd fn) ) (S.elems keys))
-                  in Tree <$> (fn path =<< ch) <*> ch
-    Right a ->  return $ Tree a M.empty)
+
 
 lookupx :: Ord k => [k] -> Tree k a -> Maybe (Tree k a)
 lookupx [] tree             = Just tree
@@ -165,6 +135,70 @@ adjustWithKey f key = adj (f key) key
   where
     adj fce [] (Tree x ch)       = Tree (fce x) ch
     adj fce (p : ps) (Tree x ch) = Tree x (M.adjust (adj fce ps) p ch)
+
+
+------------------- build trees -----------------------
+buildDownPairM :: (Monad m, Ord k) => ([k] -> m (S.Set k, a)) -> m (Tree k a)
+buildDownPairM = bu []
+  where
+    bu ::   (Monad m, Ord k) => [k] -> ([k] -> m (S.Set k, a)) -> m (Tree k a)
+    bu path fce = fce path >>= (\(keys, x) ->
+      let ch = M.fromList <$> traverse (\k -> sequence (k, bu (k:path) fce) ) (S.elems keys)
+      in Tree x <$> ch)
+
+buildDownPair :: (Ord k) => ([k] -> (S.Set k, a)) -> Tree k a
+buildDownPair fce = runIdentity $ buildDownPairM (return . fce)
+
+buildDownEitherM :: (Monad m, Ord k) => ([k] -> m (Either (S.Set k) a)) -> m (Tree k (Maybe a))
+buildDownEitherM = buildDownPairM  . eitherToPairM
+
+buildDownEither :: (Ord k) => ([k] -> Either (S.Set k) a) -> Tree k (Maybe a)
+buildDownEither fce = runIdentity $ buildDownEitherM (return . fce)
+
+
+eitherToPairM :: (Monad m, Ord k) => (e -> m (Either (S.Set k) a)) -> (e -> m (S.Set k,  Maybe a))
+eitherToPairM fce e = eitherToPair <$> fce e
+
+eitherToPair :: (Ord k) => Either (S.Set k) a -> (S.Set k,  Maybe a)
+eitherToPair  (Left ch) = (ch, Nothing)
+eitherToPair  (Right x) = (S.empty, Just x)
+
+
+{-
+
+buildx :: Ord k => ([k] -> Either [k] a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
+buildx = bu []
+  where
+   bu ::  Ord k => [k] -> ([k] -> Either [k] a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
+   bu path fd fn = case fd path of
+     Left keys -> let ch = M.fromList (fmap (\k -> (k, bu (k:path) fd fn) ) keys)
+                   in Tree (fn path ch) ch
+     Right a -> Tree a M.empty
+
+build :: Ord k => ([k] -> Either (S.Set k) a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
+build = bu []
+ where
+  bu ::  Ord k => [k] -> ([k] -> Either (S.Set k) a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
+  bu path fd fn = case fd path of
+    Left keys -> let ch = M.fromList (fmap (\k -> (k, bu (k:path) fd fn) ) (S.elems keys))
+                  in Tree (fn path ch) ch
+    Right a -> Tree a M.empty
+
+
+
+build2 :: Ord k => ([k] -> Either (S.Set k) a) -> ([k] -> M.Map k (Tree k a) -> a) -> Tree k a
+build2 fd fn = runIdentity $ buildM (return . fd) (\x y -> return (fn x y))
+
+buildM :: (Monad m, Ord k) => ([k] -> m (Either (S.Set k) a)) -> ([k] -> M.Map k (Tree k a) -> m a) -> m (Tree k a)
+buildM = bu []
+ where
+  bu ::   (Monad m, Ord k) => [k] -> ([k] -> m (Either (S.Set k) a)) -> ([k] -> M.Map k (Tree k a) -> m a) -> m (Tree k a)
+  bu path fd fn = fd path >>= (\node -> case node of
+    Left keys -> let ch = M.fromList <$> (traverse (\k -> sequence (k, bu (k:path) fd fn) ) (S.elems keys))
+                  in Tree <$> (fn path =<< ch) <*> ch
+    Right a ->  return $ Tree a M.empty)
+-}
+
 
 
 --update fce (p : ps) (Tree x ch) = Tree x (M.update (update fce ps) p ch)
