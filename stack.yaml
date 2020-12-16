@@ -43,6 +43,8 @@ extra-deps:
   - filepath-1.4.2.1
   - yaml-0.10.1.1 # neded for warnings with duplicate keys
   - counter-0.1.0.2
+  - directory-1.3.5.0@sha256:a7d0f5e79a6bb31a75dfceb9656d2de119de9f91076ec18ad30e4496d0385cfa,2782
+  - process-1.4.3.0@sha256:cf30533f073721fd059790f0b963fb9b57e3507cffef5141e9377449570b07ca,2021
 
 # Override default flag values for local packages and extra-deps
 flags: {}

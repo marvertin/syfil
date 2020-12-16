@@ -87,7 +87,7 @@ extractPureFordName [] = Nothing
 extractPureFordName fullName
   | not $ isExtensionOf metaSuffix fullName = Just fullName
 extractPureFordName ('~' : zbytek) =
-   let pureName = dropWhile ('~' ==) . dropWhile ('~' /=) $ takeBaseName zbytek
+   let pureName = drop 1 . dropWhile ('~' /=) $ takeBaseName zbytek
    in if null pureName then Nothing
                        else Just pureName
 extractPureFordName _ = Nothing
