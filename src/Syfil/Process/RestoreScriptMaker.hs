@@ -4,7 +4,8 @@
 module Syfil.Process.RestoreScriptMaker (
   makeRestoreScript,
   bashDefinition,
-  cmdDefinition
+  cmdDefinition,
+  csvDefinition
 )
 
 where
@@ -15,6 +16,7 @@ import           Data.List
 import qualified Data.Map          as M
 import qualified Data.Set          as S
 import qualified Data.Text         as T
+
 import           Text.Printf
 import           Text.RawString.QQ
 
@@ -28,6 +30,7 @@ type ScriptDefinition = (String, (FilePath, Cmd) -> String, String)
 
 cmdDefinition = (cmdRestoreScript1, toCmdCommand, cmdRestoreScript2)
 bashDefinition = (bashRestoreScript, toShallCommand, "")
+csvDefinition = ("", toCsvCommand, "")
 
 slashni = replaceBacklashesToSlashes . replaceVerticalToSlashes
 
@@ -35,11 +38,11 @@ makeRestoreScript :: ScriptDefinition -> M.Map FilePath UTCTime -> Lodree -> [St
 makeRestoreScript (script1, fce, script2) modificationTimes lodree =
     let cmdList =  S.toList . S.fromList $ (first namesToPath)  <$> (
          takeRestoreTuples lodree >>= (\ (rp, originalPath) ->
-                (rp, CpFile originalPath (lookupModificationTime rp)) :
+                (rp, CpFile (replaceVerticalToSlashes originalPath) (lookupModificationTime rp)) :
                 zip (tails . tail $ rp) (repeat MkDir)
              ))
       in  lines  (replaceDvojDvoj 3 script1)
-       ++  fmap (replaceVerticalToSlashes . fce) cmdList
+       ++  fmap (fce) cmdList
        ++ lines  script2
   where
      lookupModificationTime :: RevPath -> Maybe UTCTime
@@ -59,6 +62,17 @@ toCmdCommand (path, MkDir)     = replaceSlashesToBacklashes $ printf "call :ymkd
 toCmdCommand (path, CpFile op _) =
    replaceSlashesToBacklashes $ printf "call :ycp %%ROOT%% \"%s\" \"%s\"" (dropSlash op)  (dropSlash path)
 
+toCsvCommand :: (FilePath, Cmd) -> String
+toCsvCommand (path, MkDir)     = "DIR|" ++ dropSlash path ++ "||"
+toCsvCommand (path, CpFile op maybeTime) = 
+    printf "FILE|%s|%s|" (dropSlash path)  (dropSlash op)
+    ++ case maybeTime of
+            Nothing -> ""
+            Just time -> printf "\"%s\"" (iso8601Show time)
+
+   
+iso8601Show :: UTCTime -> String
+iso8601Show = (T.unpack) . (T.replace " " "T") . (T.replace " UTC" "Z") . (T.pack) . show
 
 dropSlash :: String -> String
 dropSlash []        = []

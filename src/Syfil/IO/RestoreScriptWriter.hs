@@ -34,9 +34,17 @@ createOnRestoreScript Ctx{..} (sliceName, lodree) mustCreate = do
   -- let modificationTimes = M.empty
   let scriptFileNameBash = indexRoot ++ "/" ++ replaceVerticalToSlashes sliceName ++ "/restore.sh"
   let scriptFileNameCmd = indexRoot ++ "/" ++ replaceVerticalToSlashes sliceName ++ "/restore.cmd"
+  let scriptFileNameCsv = indexRoot ++ "/" ++ replaceVerticalToSlashes sliceName ++ "/restore.csv"
   mustCreate <- (||) <$> mustCreate <*>
-      ((||) <$> (not <$> doesFileExist scriptFileNameBash) <*> (not <$> doesFileExist scriptFileNameCmd))
+      (
+         (||) <$> (not <$> doesFileExist scriptFileNameBash) 
+              <*> (
+                     (||) <$> (not <$> doesFileExist scriptFileNameCmd)
+                          <*> (not <$> doesFileExist scriptFileNameCsv)
+                  ) 
+      )
   when (mustCreate) $ do
      writeFile scriptFileNameBash (unlines $ makeRestoreScript bashDefinition modificationTimes lodree)
      writeFile scriptFileNameCmd (unlines $ makeRestoreScript cmdDefinition modificationTimes lodree)
+     writeFile scriptFileNameCsv (unlines $ makeRestoreScript csvDefinition modificationTimes lodree)
   return mustCreate
