@@ -5,7 +5,9 @@ module Syfil.Process.RestoreScriptMaker (
   makeRestoreScript,
   bashDefinition,
   cmdDefinition,
-  csvDefinition
+  csvDefinition,
+
+  ScriptDefinition
 )
 
 where
@@ -34,20 +36,16 @@ csvDefinition = ("", toCsvCommand, "")
 
 slashni = replaceBacklashesToSlashes . replaceVerticalToSlashes
 
-makeRestoreScript :: ScriptDefinition -> M.Map FilePath UTCTime -> Lodree -> [String]
-makeRestoreScript (script1, fce, script2) modificationTimes lodree =
+makeRestoreScript :: ScriptDefinition -> Lodree -> [String]
+makeRestoreScript (script1, fce, script2) lodree =
     let cmdList =  S.toList . S.fromList $ (first namesToPath)  <$> (
-         takeRestoreTuples lodree >>= (\ (rp, originalPath) ->
-                (rp, CpFile (replaceVerticalToSlashes originalPath) (lookupModificationTime rp)) :
+         takeRestoreTuples lodree >>= (\ (rp, originalPath, time) ->
+                (rp, CpFile (replaceVerticalToSlashes originalPath) (Just time)) :
                 zip (tails . tail $ rp) (repeat MkDir)
              ))
       in  lines  (replaceDvojDvoj 3 script1)
        ++  fmap (fce) cmdList
        ++ lines  script2
-  where
-     lookupModificationTime :: RevPath -> Maybe UTCTime
-     lookupModificationTime rp = (M.lookup (dropSlash . namesToPath $ rp) modificationTimes)
-          --   let restoreTuples = (. bimap (slashni . namesToPath) slashni) <$> takeRestoreTuples lodreeBackupCurrent
 
 toShallCommand :: (FilePath, Cmd) -> String
 toShallCommand (path, MkDir)     = printf "ymkdir \"%s\""  (dropSlash path)

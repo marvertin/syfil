@@ -110,12 +110,12 @@ flattenFileLodree lodree = flan ([], lodree)
     flan (rp, (LFile ree _))  = [(rp, ree)]
     flan (rp, (LDir _ items)) = fmap (first (:rp)) items >>= flan
 
--- | take tuples to restore originalpath to logicalpath
-takeRestoreTuples :: Lodree -> [(RevPath, FilePath)]
+-- | take tuples to restore originalpath to logicalpath with modification time
+takeRestoreTuples :: Lodree -> [(RevPath, FilePath, UTCTime)]
 takeRestoreTuples lodree = x' ([], lodree)
   where
-    x' :: (RevPath, Lodree) -> [(RevPath, FilePath)]
-    x' (rp, (LFile _ originalPath)) = [(rp, originalPath)]
+    x' :: (RevPath, Lodree) -> [(RevPath, FilePath, UTCTime)]
+    x' (rp, (LFile Ree{rtime} originalPath)) = [(rp, originalPath, rtime)]
     x' (rp, (LDir _ items))         = fmap (first (:rp)) items >>= x'
 
 --------------------------------------------------------
