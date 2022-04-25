@@ -20,7 +20,7 @@ import           Text.Printf
 import           Util.Lib
 
 createRestoreScripts ::  Ctx -> Lodree -> IO Bool
-createRestoreScripts ctx (LDir _ list) = foldr (createOnRestoreScript ctx) (return False) list
+createRestoreScripts ctx (LDir _ list) = orSequence $ map (createOneRestoreScript ctx) list
 
 restoreFilesDefinition :: [(String, ScriptDefinition)] 
 restoreFilesDefinition = [
@@ -30,28 +30,9 @@ restoreFilesDefinition = [
   ]
 
 -- (M.Map FilePath UTCTime)
-createOnRestoreScript :: Ctx -> (String, Lodree) -> IO Bool -> IO Bool
-createOnRestoreScript ctx@Ctx{..} (sliceName, lodree) mustCreate = do
-
-  print $  "BUDU-INDEXOVAT: " ++ sliceName
-  let scriptFileNameBash = indexRoot ++ "/" ++ replaceVerticalToSlashes sliceName ++ "/restore.sh"
-  let scriptFileNameCmd = indexRoot ++ "/" ++ replaceVerticalToSlashes sliceName ++ "/restore.cmd"
-  let scriptFileNameCsv = indexRoot ++ "/" ++ replaceVerticalToSlashes sliceName ++ "/restore.csv"
-
-
-  mustCreate <- (||) <$> mustCreate <*>
-      (
-         (||) <$> (not <$> doesFileExist scriptFileNameBash) 
-              <*> (
-                     (||) <$> (not <$> doesFileExist scriptFileNameCmd)
-                          <*> (not <$> doesFileExist scriptFileNameCsv)
-                  ) 
-      )
-  when (mustCreate) $ do
-     writeFile scriptFileNameBash (unlines $ makeRestoreScript bashDefinition lodree)
-     writeFile scriptFileNameCmd (unlines $ makeRestoreScript cmdDefinition lodree)
-     writeFile scriptFileNameCsv (unlines $ makeRestoreScript csvDefinition lodree)
-  return mustCreate
+createOneRestoreScript :: Ctx -> (String, Lodree) -> IO Bool
+createOneRestoreScript ctx@Ctx{..} (sliceName, lodree) = do
+  orSequence $ map cretatePieceOfRestoreScript restoreFilesDefinition   
 
   where   
     cretatePieceOfRestoreScript :: (String, ScriptDefinition) -> IO Bool
@@ -61,3 +42,8 @@ createOnRestoreScript ctx@Ctx{..} (sliceName, lodree) mustCreate = do
         when (mustCreate) $ do
           writeFile generatedScriptFullpath (unlines $ makeRestoreScript scriptDefinition lodree)
         return mustCreate  
+
+orSequence :: [IO Bool] -> IO Bool
+orSequence list = fmap (foldr (||) False) (sequence list)
+
+   
