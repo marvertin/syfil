@@ -20,6 +20,7 @@ import           Control.Exception
 import           Control.Monad
 import           Data.List
 import           Data.Time.Clock
+import           Data.Maybe
 import           System.Directory
 import           System.FilePath
 import           System.IO
@@ -52,7 +53,7 @@ data Event a
       | Start { erootPath :: FilePath }
       | End {
                erootPath :: FilePath,
-               eresult   :: a
+               eresult'   :: Maybe a
             }
       | Ignore
       | Failure IOException
@@ -78,20 +79,22 @@ emptyEventHandler = (\x -> return (), ())
 --stdOutLoggingEventHanler = hLoggingEventHandler stdout
 --hLoggingEventHandler handle startTime = (printLog startTime handle, ())
 
-scanDirectory :: Show a =>
+scanDirectory :: (Show a, Show b) =>
         (RevPath -> [(FilePath, a)] -> a) -> -- directory node creator
         (RevPath -> Bool) ->                 -- dir or file filter
         (RevPath -> IO a) ->                -- file processor
         EventHandler a b ->
         FilePath ->                         -- scaned root
-        IO (a, b)                           -- result,
+        IO (Maybe a, b)                           -- result,
 scanDirectory createDirNode predicate createFileNode (eventFce, eventStart) rootPath = do
     startTime <- getCurrentTime
     let nula = 0 :: Int
     let startFlowAvar = flowAvarEmpty startTime
     evacum2 <- emitEvent' [] startFlowAvar (Start rootPath) eventStart
-    Acum flowAvar ((_, result) : _) evacum3
-      <- scanDirectory' 0 startTime (Acum startFlowAvar [] evacum2) []
+    
+    Acum flowAvar resultList evacum3  <- scanDirectory' 0 startTime (Acum startFlowAvar [] evacum2) []
+
+    let result = fmap snd $ listToMaybe resultList
     endTime <- getCurrentTime
     evacum4 <- emitEvent' [] [myhead flowAvar, last startFlowAvar]  (End rootPath result) evacum3
     --putStrLn $ "End scanning at " ++ show endTime ++ ", duration=" ++ show duration ++ "; total: "

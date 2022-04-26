@@ -16,6 +16,7 @@ import qualified Data.Map                    as M
 import           Data.Time.Clock
 import           Data.Tuple
 import           Data.Yaml
+import           Data.Maybe
 import           System.Directory
 import           System.Directory.Tree
 import           System.Exit
@@ -105,7 +106,7 @@ scanSlices ctx@Ctx{..} = do
                                    slice <- (decodeFileThrow sliceIndexPath :: IO Slicin)
                                    return (slice, ErrList [])
                                 else do
-                                   (slice, errs) <- readSlice (getEventHandler tmStart lo) (dataRoot </> name)
+                                   (Just slice, errs) <- readSlice (getEventHandler tmStart lo) (dataRoot </> name) -- it allways exists beacause te directories was found by scaning
                                    when (null . getErrList $ errs)  $ do -- write index only whne there are no errors
                                      encodeFile sliceIndexTempPath slice
                                      slice2 <- (decodeFileThrow sliceIndexTempPath :: IO Slicin)
@@ -144,7 +145,7 @@ scanSources ctx@Ctx{..} = do
   lo Inf "Phase 2/4 - reading source forest for backup"
   tmStart <- getCurrentTime
   lo Inf $ printf "    %d trees in forest " (length forest)
-  (lodreeSourceAllNodes, failusSurces) <- bimap makeLDir (>>= getErrList) . unzip <$>
+  (lodreeSourceAllNodes, failusSurces) <- bimap (makeLDir . filterNothing) (>>= getErrList) . unzip <$>
        forM forest ( \(TreeDef treeName treePath ignorances) -> do
           lo Inf $ printf "       scaning %-15s- \"%s\"" treeName treePath
           lo Debug $ "ignorance patterns: " ++ (show ignorances)
@@ -153,19 +154,26 @@ scanSources ctx@Ctx{..} = do
           cacheHash <- doesFileExist cacheHashPath >>=
                              (\exists -> if exists then (decodeFileThrow cacheHashPath :: IO CacheHash)
                                                    else return M.empty)
-          (lodreeSourceOneNode, errList) <- readSourceTree lo cacheHash ignorances treePath
-          -- encodeFile (indexRoot </> (treeName ++ sliceSourceTree_suffix)) lodreeSourceOneNode
-          -- encodeFile cacheHashPath (flattenFileLodree lodreeSourceOneNode)
-          encodeFile cacheHashPath (M.fromList (flattenFileLodree lodreeSourceOneNode))
+          (maybyLodreeSourceOneNode, errList) <- readSourceTree lo cacheHash ignorances treePath
+          
           tmSourceEnd <- getCurrentTime
-          lo Summary $ printf "source %-15s-%s \"%s\" (%s)" treeName (showRee (ree lodreeSourceOneNode)) treePath (showDiffTm tmSourceEnd tmSourceStart)
-          return ((treeName, lodreeSourceOneNode), errList)
+          if (isJust maybyLodreeSourceOneNode)
+                  then do  
+                           let (Just lodreeSourceOneNode) = maybyLodreeSourceOneNode 
+                           encodeFile cacheHashPath (M.fromList (flattenFileLodree lodreeSourceOneNode))
+                           lo Summary $ printf "source %-15s-%s \"%s\" (%s)" treeName (showRee (ree lodreeSourceOneNode)) treePath (showDiffTm tmSourceEnd tmSourceStart)
+                  else do      
+                           lo Summary $ printf "source %-15s \"%s\" (%s)" treeName treePath (showDiffTm tmSourceEnd tmSourceStart)
+          return ((treeName, maybyLodreeSourceOneNode), errList)
      )
   lo Inf $ "    " ++ showRee (ree lodreeSourceAllNodes)
   tmEnd <- getCurrentTime
   lo Inf $ showPhaseTime tmEnd tmStart
   lo Summary $ printf "forest of %d trees %s (%s)" (length forest) (showRee (ree lodreeSourceAllNodes)) (showDiffTm tmEnd tmStart)
   return (lodreeSourceAllNodes, failusSurces)
+
+filterNothing :: [(a, Maybe b)] -> [(a, b)]
+filterNothing = map (\ (a, Just b) -> (a, b)) . filter (isJust . snd)
 
 compareSlicesToSources :: Ctx -> Lodree -> Lodree -> IO (Maybe Slicout)
 compareSlicesToSources ctx@Ctx{..} rootLodree lodreeSourceAllNodes = do

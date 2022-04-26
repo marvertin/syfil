@@ -43,7 +43,7 @@ import           Util.Lib
 
 
 
-readSlice :: EventHandler Slicin ErrList -> FilePath -> IO (Slicin, ErrList)
+readSlice :: EventHandler Slicin ErrList -> FilePath -> IO (Maybe Slicin, ErrList)
 readSlice eventHandler rootDir = do 
     modificationTimes <- loadModificationTimesFile rootDir
     scanDirectory mkDir filterFilesInRoot (readSFile modificationTimes) eventHandler

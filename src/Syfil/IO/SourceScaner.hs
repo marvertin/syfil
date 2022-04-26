@@ -35,7 +35,7 @@ getEventHandler :: UTCTime -> Log -> (EventEnvelop a ErrList -> IO ErrList, ErrL
 getEventHandler time lo  = (logInScan time lo, ErrList [])
 
 -- EventHandler Lodree b
-readSourceTree :: Log -> CacheHash -> IgnoranceDef -> FilePath -> IO (Lodree, ErrList)
+readSourceTree :: Log -> CacheHash -> IgnoranceDef -> FilePath -> IO (Maybe Lodree, ErrList)
 readSourceTree lo cacheHash ignorance rootDir = do
      startTime <- getCurrentTime
      scanDirectory (const makeLDir)
