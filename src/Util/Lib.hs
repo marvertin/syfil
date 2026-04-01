@@ -4,6 +4,8 @@
 {-# LANGUAGE RecordWildCards      #-}
 {-# LANGUAGE StandaloneDeriving   #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Util.Lib
     (
@@ -120,15 +122,19 @@ instance HasFileName (DirTree a) where
 -- (Num a, Num b, Num c) =>
 data  MonoidPlus3 a b c = MonoidPlus3 (a, b, c) deriving (Show)
 
+instance (Num a, Num b, Num c) => Semigroup (MonoidPlus3 a b c) where
+  (<>) (MonoidPlus3 (x1, y1, z1)) (MonoidPlus3 (x2, y2, z2)) = MonoidPlus3 (x1 + x2, y1 + y2, z1 + z2)
+
 instance (Num a, Num b, Num c) => Monoid (MonoidPlus3 a b c) where
   mempty = MonoidPlus3 (0, 0, 0)
-  mappend (MonoidPlus3 (x1, y1, z1)) (MonoidPlus3 (x2, y2, z2)) = MonoidPlus3 (x1 + x2, y1 + y2, z1 + z2)
 
 data  MonoidPlus2x2 a b c d = MonoidPlus2x2 ((a, b), (c, d))
 
+instance (Num a, Num b, Num c, Num d) => Semigroup (MonoidPlus2x2 a b c d) where
+  (<>) (MonoidPlus2x2 ((w1, x1), (y1, z1))) (MonoidPlus2x2 ((w2, x2), (y2, z2))) = MonoidPlus2x2 ((w1 + w2, x1 + x2), (y1 + y2, z1 + z2))
+
 instance (Num a, Num b, Num c, Num d) => Monoid (MonoidPlus2x2 a b c d) where
   mempty = MonoidPlus2x2 ((0, 0), (0, 0))
-  mappend (MonoidPlus2x2 ((w1, x1), (y1, z1))) (MonoidPlus2x2 ((w2, x2), (y2, z2))) = MonoidPlus2x2 ((w1 + w2, x1 + x2), (y1 + y2, z1 + z2))
 
 
 {- | Dump to lines for debug purpures.

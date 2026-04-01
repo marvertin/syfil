@@ -121,7 +121,7 @@ scanSlices ctx@Ctx{..} = do
         lo Inf $ printf "        %s: %s" (replaceVerticalToSlashes name) (show (computeSizes slice))
         return (slice, errs)
     )
-  let statTotal =  foldMap computeSizes slices
+  let statTotal =  mconcat (map computeSizes slices)
   lo Inf $ printf "    total slices:    %s" (show statTotal)
   let rootLodree = mergesToLodree emptyLodree slices
   lo Inf $ printf "    all slices merged:   %s" (showRee . ree . currentLodree $ rootLodree)
