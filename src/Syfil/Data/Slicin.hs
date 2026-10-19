@@ -29,7 +29,7 @@ import qualified Data.HashMap.Strict   as HM
 import           Data.List
 import qualified Data.Map              as M
 import           Data.Maybe
-import           Data.Text             hiding (lines, unlines)
+import           Data.Text             hiding (dropWhileEnd, lines, map, unlines)
 import qualified Data.Text             as T
 import qualified Data.Text.IO          as TIO
 import           Data.Yaml
@@ -58,8 +58,9 @@ data SliceCmd = Delete | Link FilePath
 
 
 parseMetaFile :: String -> SliceCmd
-parseMetaFile fileContent = (parse . lines) fileContent
+parseMetaFile fileContent = (parse . map (dropWhileEnd (== '\r')) . lines) fileContent
   where
+    -- Windows metadata retains CR characters when read on Unix.
     parse :: [String] -> SliceCmd
     parse []                   = error "meta file is empty"
     parse ("#version1" : line : _) = read line

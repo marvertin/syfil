@@ -1,5 +1,5 @@
 name:                syfil
-version:             1.2.2
+version:             1.2.3
 github:              "marvertin/safe-backup"
 license:             BSD3
 author:              "Martin Veverka"
@@ -66,6 +66,11 @@ executables:
     - syfil
 
 tests:
+  syfil-meta-test:
+    main:                Main.hs
+    source-dirs:         test/meta
+    dependencies:
+    - syfil
   syfil-test:
     main:                Spec.hs
     source-dirs:         test
