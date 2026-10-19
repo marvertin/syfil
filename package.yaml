@@ -1,5 +1,5 @@
 name:                syfil
-version:             1.2.3
+version:             1.2.4
 github:              "marvertin/safe-backup"
 license:             BSD3
 author:              "Martin Veverka"
@@ -9,6 +9,9 @@ copyright:           "2018 Martin Veverka"
 extra-source-files:
 - README.md
 - ChangeLog.md
+- test/README.md
+- test/dedup/README.md
+- test/dedup/*.py
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -66,17 +69,15 @@ executables:
     - syfil
 
 tests:
-  syfil-meta-test:
-    main:                Main.hs
-    source-dirs:         test/meta
-    dependencies:
-    - syfil
   syfil-test:
     main:                Spec.hs
-    source-dirs:         test
+    source-dirs:         test/spec
     ghc-options:
+    - -Wall
     - -threaded
     - -rtsopts
-    - -with-rtsopts=-N
     dependencies:
     - syfil
+    - hspec >= 2.10 && < 3
+    - QuickCheck >= 2.14 && < 3
+    - temporary >= 1.3 && < 1.4
