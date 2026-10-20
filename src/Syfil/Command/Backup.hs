@@ -39,6 +39,7 @@ import           Syfil.IO.RestoreScriptWriter
 import           Syfil.IO.SliceNameStrategy
 import           Syfil.IO.SlicinScaner
 import           Syfil.IO.SlicoutWriter
+import           Syfil.IO.HashCache
 import           Syfil.IO.SourceScaner
 import           Syfil.Process.SlicinMerger
 import           Syfil.Process.SlicoutBuilder
@@ -150,17 +151,24 @@ scanSources ctx@Ctx{..} = do
           lo Inf $ printf "       scaning %-15s- \"%s\"" treeName treePath
           lo Debug $ "ignorance patterns: " ++ (show ignorances)
           tmSourceStart <- getCurrentTime
-          let cacheHashPath = (indexRoot </> (indexVersion ++ "_" ++ treeName ++ ".yaml"))
-          cacheHash <- doesFileExist cacheHashPath >>=
-                             (\exists -> if exists then (decodeFileThrow cacheHashPath :: IO CacheHash)
-                                                   else return M.empty)
-          (maybyLodreeSourceOneNode, errList) <- readSourceTree lo cacheHash ignorances treePath
+          let legacyCachePath = indexRoot </> ("1_" ++ treeName ++ ".yaml")
+              journalPath = indexRoot </> cacheFileName treeName
+          sourceIdentity <- canonicalizePath treePath
+          (maybyLodreeSourceOneNode, errList) <-
+            withHashCache (lo Error) journalPath legacyCachePath sourceIdentity $ \cache -> do
+              lo Inf ("    source hash cache: loaded " ++ show (M.size (cachedHashes cache)) ++ " records")
+              result@(tree, errors) <- readSourceTreeCached lo (cachedHashes cache)
+                                        (rememberHash cache) ignorances treePath
+              case tree of
+                Just complete | null (getErrList errors) ->
+                  compactCache cache (M.fromList (flattenFileLodree complete))
+                _ -> pure ()
+              pure result
           
           tmSourceEnd <- getCurrentTime
           if (isJust maybyLodreeSourceOneNode)
                   then do  
                            let (Just lodreeSourceOneNode) = maybyLodreeSourceOneNode 
-                           encodeFile cacheHashPath (M.fromList (flattenFileLodree lodreeSourceOneNode))
                            lo Summary $ printf "source %-15s-%s \"%s\" (%s)" treeName (showRee (ree lodreeSourceOneNode)) treePath (showDiffTm tmSourceEnd tmSourceStart)
                   else do      
                            lo Summary $ printf "source %-15s \"%s\" (%s)" treeName treePath (showDiffTm tmSourceEnd tmSourceStart)

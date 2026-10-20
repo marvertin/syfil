@@ -1,5 +1,5 @@
 name:                syfil
-version:             1.2.4
+version:             1.2.5
 github:              "marvertin/safe-backup"
 license:             BSD3
 author:              "Martin Veverka"
@@ -50,12 +50,16 @@ dependencies:
 - raw-strings-qq
 - terminal-size
 - executable-path
+- filelock
 
 
 # - derive
 
 library:
   source-dirs: src
+  when:
+  - condition: '!os(windows)'
+    dependencies: unix
 
 executables:
   syfil:

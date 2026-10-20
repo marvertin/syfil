@@ -1,5 +1,16 @@
 # Changelog for Syfil
 
+## 1.2.5 - 2026-10-20
+
+- Save source hashes incrementally in a checksummed JSONL journal and resume
+  interrupted scans without rereading completed files.
+- Import the original YAML hash cache while keeping slice index format 1.
+- Recover interrupted cache replacement using a verified temporary snapshot,
+  deletion of the old cache and rename of the replacement.
+- Lock cache writers, validate file stability while hashing, and report cache
+  failures without substituting stale hashes for source read errors.
+- Add 17 cache, migration, corruption, recovery and source-scan regression tests.
+
 ## 1.2.4 - 2026-10-19
 
 - Use Hspec and QuickCheck for a unified automated test suite; replace the old
